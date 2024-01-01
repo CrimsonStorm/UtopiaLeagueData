@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Front Page</title>
+</head>
+<body>
+    <h1>Welcome to the Front Page!</h1>
+
+    <label for="pageSelector">Select a Page:</label>
+    <select id="pageSelector">
+        <option value="FrontPage.html">Front Page</option>
+		<option value="Breakdown_by_player.html">Breakdown By Player</option>
+		<option value="Player_win_rates.html">Player Win Rates</option>
+        <option value="Breakdown_by_leader.html">Breakdown by Leader Page</option>
+		<option value="Leader_win_rates.html">Leader Win Rates</option>
+        <!-- Add more options as needed -->
+    </select>
+
+    <button onclick="redirectToSelectedPage()">Go to Selected Page</button>
+
+    <div id="plotContainer">
+        <!-- The Plotly chart will be inserted here -->
+    </div>
+
+    <script>
+        function redirectToSelectedPage() {
+            var selectedPage = document.getElementById("pageSelector").value;
+            window.location.href = selectedPage;
+        }
+    </script>
+</body>
+</html>
