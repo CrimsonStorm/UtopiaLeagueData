@@ -5,7 +5,53 @@ from google.oauth2.service_account import Credentials
 import plotly.express as px
 from plotly.offline import plot
 
+
+def winLossRatios(data,DataToCalc):
+    '''
+    Loop through data to get all player names and Win-Loss rates.
+    Once Win-Loss rates are obtained, store them in a list and calculate total wins, losses, and draws.
+    '''
+    winLossRates = []
+    for x in data:
+      name_to_check = x[DataToCalc]
+      #print(name_to_check)
+      #print(x['Win-Loss'].split('-'))
+      #print(x['Win-Loss'].split('-')[0])
+      
+      found_indices = [index for index, sublist in enumerate(winLossRates) if name_to_check in sublist]
+      if not winLossRates:
+        #print("none in winlist")
+        winLossRates.append([name_to_check,int(x['Win-Loss'].split('-')[0]),int(x['Win-Loss'].split('-')[1]),int(x['Win-Loss'].split('-')[2])])
+        #lossList.append([name_to_check,int(x['Win-Loss'].split('-')[1])])
+        #drawList.append([name_to_check,int(x['Win-Loss'].split('-')[2])])
+      elif any(name_to_check in sublist for sublist in winLossRates):
+        indexNum = found_indices[0]
+        winLossRates[indexNum][1] += int(x['Win-Loss'].split('-')[0])
+        winLossRates[indexNum][2] += int(x['Win-Loss'].split('-')[1]) 
+        winLossRates[indexNum][3] += int(x['Win-Loss'].split('-')[2])
+        #print("has name")
+      else: 
+        winLossRates.append([name_to_check,int(x['Win-Loss'].split('-')[0]),int(x['Win-Loss'].split('-')[1]),int(x['Win-Loss'].split('-')[2])])
+        #lossList.append([name_to_check,int(x['Win-Loss'].split('-')[1])]) 
+        #drawList.append([name_to_check,int(x['Win-Loss'].split('-')[2])])
+        #print("does not have name")
+    return winLossRates
+
+
+def WinPercentage(winLossRatios):
+  ''' 
+  Calculate WinRates by looping through winLossRates from earlier.   
+  Calculation is Wins/( Wins + Losses + Draws ) * 100
+  ''' 
+  winLossPercentages = []
+  for x in winLossRatios:
+    winLossPercentages.append([x[0],x[1]/ ( x[1] + x[2] + x[3] ) *100,x[2]/ ( x[1] + x[2] + x[3] ) *100])
+    #print(x[0] + "'s Win Rate: " + str( x[1]/ ( x[1] + x[2] + x[3] ) *100) + '%')
+  return winLossPercentages
+  
+
 # Mapping Data that will be used for plots
+
 deck_mapping = {
     'St1 Luffy': 'Red Monkey.D.Luffy',
     'St2 Kid': 'Green Eustass "Captain" Kid',
@@ -61,55 +107,49 @@ deck_mapping = {
 }
 
 # Load credentials
+
 credentials = Credentials.from_service_account_file('utopia-one-piece-league-f149697f5d52.json', scopes=['https://www.googleapis.com/auth/spreadsheets.readonly'])
 
+
 # Connect to Google Sheets
+
 gc = gspread.authorize(credentials)
 
+
 # Open the Google Sheet by its title
+
 sheet_key = '1EKzyTHIN0fIfsrhwv9fzPMsbGpKFAItVsClrNryxUGs'
 sheet = gc.open_by_key(sheet_key).sheet1
 
+
 # Get data from the sheet
+
 data = sheet.get_all_records()
 
+
 # Create Plotly chart for point breakdown by player
+
 fig = px.pie(data, names='Player_Name', values='Points_Earned')
 fig.update_layout(title='Player Distribution')
 
 
 # Win rates/percentages by player
-winList = []
-lossList = []
-drawList = []
+'''
+  Loop through data to get all player names and Win-Loss rates.
+  Once Win-Loss rates are obtained, store them in a list and calculate total wins, losses, and draws.
+'''
 
-for x in data:
-  print(x['Player_Name'])
-  print(x['Win-Loss'].split('-'))
-  print(winList[:, 0])
+winLossRatesPlayers = winLossRatios(data,'Player_Name')
+print(winLossRatesPlayers)
   
-  '''winList.append([x['Player_Name'],x['Win-Loss'].split('-')[0]])
-  lossList.append([x['Player_Name'],x['Win-Loss'].split('-')[1]])
-  drawList.append([x['Player_Name'],x['Win-Loss'].split('-')[2]])
   
-for x in winList:
-  print(x)
-for x in lossList:
-  print(x)
-for x in drawList:
-  print(x)'''
+# Calculate Win % Per Player
  
+winLossPercentages = WinPercentage(winLossRatesPlayers)
+print(winLossPercentages)  
 
-  '''if any(winList[:, 0] == x['Player_Name']):
-    print('hasSomething')
-    #x['Win-Loss'].split('-')
-  elif len(x) == 0:
-    #x[len(x)]
-    print('length is 0')
-  else:
-    print('does not have name but does have something')
-    #x[len(x)+1].append() '''
- 
+############# TODO Create Plots 
+
 
 # Create Plot for breakdown by leader
 
@@ -120,16 +160,33 @@ fig3 = px.pie(data, names='Deck_Used', values='Points_Earned')
 fig3.update_layout(title='Leader Distribution')
 
 
-# Win rates/percentages by player
+# Win rates/percentages by Leader
+
+#Note: Logic should be the same as Win/Loss Percentages by Player, but replace players with Leaders in the mapping. Refactor?
+winLossRatesLeaders = winLossRatios(data,'Deck_Used')
+print(winLossRatesLeaders)
+
+# Calculate Win % Per Leader
+ 
+winLossPercentagesLeaders = WinPercentage(winLossRatesLeaders)
+print(winLossPercentagesLeaders)  
 
 
 # Win rates/percentages by Color
 
+#Note: Logic should be similar to leader win rates/percentages but separate string in the beginning to get color
 
-# Win rates/percentages by Leader
 
 
-# 
+
+
+
+
+
+
+
+
+
 
 
 
