@@ -151,6 +151,10 @@ print(winLossPercentages)
 ############# TODO Create Plots 
 
 
+
+#Create Plot for Wins and losses per week for the season
+
+
 # Create Plot for breakdown by leader
 
 data3 = copy.deepcopy(data)
@@ -172,12 +176,15 @@ winLossPercentagesLeaders = WinPercentage(winLossRatesLeaders)
 print(winLossPercentagesLeaders)  
 
 
+############# TODO Create Plots 
+
+
 # Win rates/percentages by Color
 
 #Note: Logic should be similar to leader win rates/percentages but separate string in the beginning to get color
 
 
-
+############# TODO Create Plots 
 
 
 
